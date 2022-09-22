@@ -1,5 +1,5 @@
 import express from "express";
-import { Movie } from "../models_mongoDB/movie.js";
+import { Movie, validateMovie } from "../models_mongoDB/movie.js";
 import { Genre } from "../models_mongoDB/genre.js";
 
 const router = express.Router();
@@ -35,6 +35,13 @@ router.put("/:id", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
+  const { error } = validateMovie(req.body);
+
+  if (error) {
+    console.log(error);
+    return res.status(400).send(error.details[0].message);
+  }
+
   const genre = await Genre.findById(req.body.genreId);
 
   let movie = new Movie({
