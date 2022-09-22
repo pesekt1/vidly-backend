@@ -1,22 +1,29 @@
-import Genre from "../models_mongoDB/genre.js";
+import { Genre } from "../models_mongoDB/genre.js";
+import { Movie } from "../models_mongoDB/movie.js";
 import mongoose from "mongoose";
 import config from "config";
 
-const genres = [
-  { name: "Action" },
-  { name: "Adventure" },
-  { name: "Comedy" },
-  { name: "Crime" },
-  { name: "Drama" },
-  { name: "Fantasy" },
-  { name: "Historical" },
-  { name: "Historical Fiction" },
-  { name: "Horror" },
-  { name: "Magical Realism" },
-  { name: "Mystery" },
-  { name: "Paranoid" },
-  { name: "Philosophical" },
-  { name: "Political" },
+const data = [
+  {
+    name: "Comedy",
+    movies: [
+      { title: "The Hangover", numberInStock: 5, dailyRentalRate: 2.5 },
+      { title: "Wedding Crashers", numberInStock: 5, dailyRentalRate: 2.5 },
+      {
+        title: "The 40-Year-Old Virgin",
+        numberInStock: 5,
+        dailyRentalRate: 2.5,
+      },
+    ],
+  },
+  {
+    name: "Action",
+    movies: [
+      { title: "Die Hard", numberInStock: 5, dailyRentalRate: 2.5 },
+      { title: "Terminator", numberInStock: 5, dailyRentalRate: 2.5 },
+      { title: "The Avengers", numberInStock: 5, dailyRentalRate: 2.5 },
+    ],
+  },
 ];
 
 async function seed() {
@@ -24,8 +31,17 @@ async function seed() {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   });
+  await Movie.deleteMany({});
   await Genre.deleteMany({});
-  await Genre.insertMany(genres);
+
+  for (let genre of data) {
+    const { _id } = await new Genre({ name: genre.name }).save();
+    const movies = genre.movies.map((movie) => ({
+      ...movie,
+      genre: { _id, name: genre.name },
+    }));
+    await Movie.insertMany(movies);
+  }
 
   mongoose.disconnect();
   console.log("Seeding completed.");

@@ -1,11 +1,11 @@
 import express from "express";
-import { Genre } from "../models_mongoDB/genre.js";
+import { Movie } from "../models_mongoDB/movie.js";
 
 const router = express.Router();
 
 router.get("/", async (req, res) => {
-  const genres = await Genre.find();
-  res.send(genres);
+  const movies = await Movie.find();
+  res.send(movies);
 });
 
 export default router;
