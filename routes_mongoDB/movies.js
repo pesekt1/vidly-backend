@@ -3,6 +3,7 @@ import { Movie, validateMovie } from "../models_mongoDB/movie.js";
 import { Genre } from "../models_mongoDB/genre.js";
 import auth from "../middleware/auth.js";
 import isAdmin from "../middleware/admin.js";
+import validateObjectId from "../middleware/validateObjectId.js";
 
 const router = express.Router();
 
@@ -11,7 +12,7 @@ router.get("/", async (req, res) => {
   res.send(movies);
 });
 
-router.get("/:id", async (req, res) => {
+router.get("/:id", validateObjectId, async (req, res) => {
   const movie = await Movie.findById(req.params.id);
   if (!movie)
     return res.status(404).send("The movie with the given ID was not found.");
