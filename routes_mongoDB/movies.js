@@ -1,6 +1,8 @@
 import express from "express";
 import { Movie, validateMovie } from "../models_mongoDB/movie.js";
 import { Genre } from "../models_mongoDB/genre.js";
+import auth from "../middleware/auth.js";
+import isAdmin from "../middleware/admin.js";
 
 const router = express.Router();
 
@@ -16,7 +18,7 @@ router.get("/:id", async (req, res) => {
   res.send(movie);
 });
 
-router.put("/:id", async (req, res) => {
+router.put("/:id", auth, async (req, res) => {
   const movie = await Movie.findByIdAndUpdate(
     req.params.id,
     {
@@ -34,7 +36,7 @@ router.put("/:id", async (req, res) => {
   res.send(movie);
 });
 
-router.post("/", async (req, res) => {
+router.post("/", auth, async (req, res) => {
   const { error } = validateMovie(req.body);
 
   if (error) {
@@ -54,7 +56,7 @@ router.post("/", async (req, res) => {
   res.send(movie);
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", [auth, isAdmin], async (req, res) => {
   const movie = await Movie.findByIdAndRemove(req.params.id);
   if (!movie)
     return res.status(404).send("The movie with the given ID was not found.");
