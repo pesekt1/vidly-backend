@@ -2,6 +2,9 @@ import express from "express";
 import connectMongoDB from "./startup/mongoDB.js";
 import setRoutes from "./startup/routes.js";
 import cors from "cors";
+import checkConfig from "./startup/config.js";
+
+checkConfig();
 
 const app = express();
 
